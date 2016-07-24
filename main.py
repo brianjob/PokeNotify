@@ -567,7 +567,6 @@ def main():
         scan(args, pokemonsJSON)
 
     print 'Program completed in {}'.format(str(datetime.now() - start))
-#    register_background_thread()
 
 
 # run a scan of area
@@ -677,8 +676,7 @@ def process_step(args, api_endpoint, access_token, profile_response,
         }
 
         if poke.SpawnPointId not in pokemons:
-            print 'POKEMON FOUND'
-           # notifier.pokemon_found(pokemon_obj)
+            notifier.pokemon_found(pokemon_obj)
 
         pokemons[poke.SpawnPointId] = pokemon_obj
 
