@@ -1,0 +1,9 @@
+{
+  "auth_service": "ptc",
+  "username": "GottaFindThem69",
+  "password": "tester",
+  "step_limit": 8,
+  "location": "42.284386, -83.747102",
+  "notify": "Bulbasaur,Ivysaur,Venusaur,Charmander,Charmeleon,Charizard,Squirtle,Wartortle,Blastoise,Ekans,Arbok,Pikachu,Raichu,Sandshrew,Sandslash,Vulpix,Ninetales,Diglett,Dugtrio,Mankey,Primeape,Growlithe,Arcanine,Abra,Kadabra,Alakazam,Machop,Machoke,Machamp,Geodude,Graveler,Golem,Ponyta,Rapidash,Slowbro,Magnemite,Magneton,Farfetch'd,Doduo,Dodrio,Dewgong,Grimer,Muk,Onix,Voltorb,Electrode,Exeggcute,Exeggutor,Cubone,Marowak,Hitmonlee,Hitmonchan,Lickitung,Koffing,Weezing,Rhyhorn,Rhydon,Chansey,Tangela,Kangaskhan,Starmie,Mr. Mime,Scyther,Electabuzz,Magmar,Pinsir,Gyarados,Lapras,Ditto,Vaporeon,Jolteon,Flareon,Porygon,Omanyte,Omastar,Kabuto,Kabutops,Aerodactyl,Snorlax,Articuno,Zapdos,Moltres,Dratini,Dragonair,Dragonite,Mewtwo,Mew",
+  "pushbullet": "o.lPwdysMjdEr6KMlq6a08SZCVnTPLFwwh"
+}
