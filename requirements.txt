@@ -4,7 +4,6 @@ docopt==0.6.2
 future==0.15.2
 geopy==1.11.0
 gpsoauth==0.3.0
-GroupyAPI==0.6.6
 Pillow==2.5.3
 protobuf==2.6.1
 pushbullet.py==0.10.0
