@@ -8,8 +8,8 @@ Pillow==2.5.3
 protobuf==2.6.1
 pushbullet.py==0.10.0
 pycryptodomex==3.4.2
+python-dateutil==2.5.3
 python-magic==0.4.12
-pytz==2016.6.1
 redis==2.10.5
 requests==2.10.0
 s2sphere==0.2.4
