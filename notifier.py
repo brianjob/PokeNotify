@@ -47,8 +47,8 @@ def still_running():
     pushbullet_client.push_note('Pokemon finder is still running', 'just letting you know')
 
 def convert_timestamp(timestamp):
-    datetime_obj_naive = datetime.fromtimestamp(timestamp)
-    datetime_obj_est = timezone('US/Eastern').localize(datetime_obj_naive)
+    est = timezone('US/Eastern')
+    datetime_obj_est = est.localize(datetime.fromtimestamp(timestamp).replace(tzinfo=est))
     return datetime_obj_est.strftime("%-I:%M:%S %p")
 
 # Notify user for discovered Pokemon
