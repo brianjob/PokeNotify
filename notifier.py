@@ -79,12 +79,8 @@ def pokemon_found(pokemon):
     latLon = '{},{}'.format(repr(pokemon["lat"]), repr(pokemon["lng"]))
     google_maps_link = 'http://maps.google.com/maps/place/{}/@{},{}z'.format(latLon, latLon, 20)
 
-    notification_text = "THERE'S A FUCKING " + _str(pokemon["name"].upper()) + "!"
     disappear_time = convert_timestamp(pokemon['disappear_time'])
-    #disappear_time = str(datetime.fromtimestamp(pokemon["disappear_time"]).strftime("%I:%M%p:%S").lstrip('0'))+")"
-#    location_text = _str(pokemon["name"]) + " will be available until " + disappear_time + "."
 
-    #push = pushbullet_client.push_link(notification_text, google_maps_link, body=location_text)
     bot_id = os.environ['BOT_ID']
     groupme_message = 'A wild {} appeared at {} and will be available until {}.'.format(_str(pokemon['name']), google_maps_link, disappear_time)
     groupme.send_message(groupme_message, bot_id)
