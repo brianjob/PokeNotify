@@ -41,10 +41,6 @@ def init():
 def _str(s):
   return s.encode('utf-8').strip()
 
-# notify app is still running
-def still_running():
-    print 'notifying app is still running'
-    pushbullet_client.push_note('Pokemon finder is still running', 'just letting you know')
 
 def convert_timestamp(timestamp):
     # METHOD 1: Hardcode zones:
@@ -90,5 +86,6 @@ def pokemon_found(pokemon):
     bot_id = os.environ['BOT_ID']
     groupme_message = 'A wild {} appeared at {}, and will be available until {}.'.format(_str(pokemon['name']), google_maps_link, disappear_time)
     groupme.send_message(groupme_message, bot_id)
+    twitter.tweet(groupme_message)
 
 init()

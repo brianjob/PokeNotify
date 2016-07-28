@@ -60,6 +60,7 @@ FLOAT_LAT = 0
 FLOAT_LONG = 0
 NEXT_LAT = 0
 NEXT_LONG = 0
+MAX_RETRIES = 2
 auto_refresh = 0
 default_step = 0.001
 api_endpoint = None
@@ -171,7 +172,8 @@ def get_location_coords():
 
 
 def retrying_api_req(service, api_endpoint, access_token, *args, **kwargs):
-    while True:
+    retry_count = 0
+    while True and retry_count < MAX_RETRIES:
         try:
             response = api_req(service, api_endpoint, access_token, *args,
                                **kwargs)
@@ -181,6 +183,7 @@ def retrying_api_req(service, api_endpoint, access_token, *args, **kwargs):
         except (InvalidURL, ConnectionError, DecodeError, ReadTimeout), e:
             debug('retrying_api_req: request error ({}), retrying'.format(
                 str(e)))
+        retry_count += 1
         time.sleep(1)
 
 
@@ -227,7 +230,8 @@ def api_req(service, api_endpoint, access_token, *args, **kwargs):
 
 def get_api_endpoint(service, access_token, api=API_URL):
     profile_response = None
-    while not profile_response:
+    retry_count = 0
+    while not profile_response and retry_count < MAX_RETRIES:
         profile_response = retrying_get_profile(service, access_token, api,
                                                 None)
         if not hasattr(profile_response, 'api_url'):
@@ -240,11 +244,14 @@ def get_api_endpoint(service, access_token, api=API_URL):
                 'get_api_endpoint: retrying_get_profile returned no-len api_url, retrying')
             profile_response = None
 
+        retry_count += 1
+
     return 'https://%s/rpc' % profile_response.api_url
 
 def retrying_get_profile(service, access_token, api, useauth, *reqq):
     profile_response = None
-    while not profile_response:
+    retry_count = 0
+    while not profile_response and retry_count < MAX_RETRIES:
         profile_response = get_profile(service, access_token, api, useauth,
                                        *reqq)
         if not hasattr(profile_response, 'payload'):
@@ -256,6 +263,8 @@ def retrying_get_profile(service, access_token, api, useauth, *reqq):
             debug(
                 'retrying_get_profile: get_profile returned no-len payload, retrying')
             profile_response = None
+
+        retry_count += 1
 
     return profile_response
 
