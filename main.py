@@ -25,6 +25,7 @@ from requests.adapters import ConnectionError
 from requests.models import InvalidURL
 from requests.exceptions import ReadTimeout
 from transform import *
+from persist import get_all_pokemon, save_all_pokemon
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -62,8 +63,6 @@ NEXT_LONG = 0
 auto_refresh = 0
 default_step = 0.001
 api_endpoint = None
-pokemons = {}
-
 origin_lat, origin_lon = None, None
 is_ampm_clock = False
 
@@ -531,6 +530,7 @@ def login(args):
 
 def main():
     start = datetime.now()
+    pokemons = get_all_pokemon()
 
     full_path = os.path.realpath(__file__)
     (path, filename) = os.path.split(full_path)
@@ -552,28 +552,31 @@ def main():
 
     # only get location for first run
     if not (FLOAT_LAT and FLOAT_LONG):
-      print('[+] Getting initial location')
-      retrying_set_location(args.location)
+        print('[+] Getting initial location')
+        retrying_set_location(args.location)
 
     if args.auto_refresh:
         global auto_refresh
         auto_refresh = int(args.auto_refresh) * 1000
 
     if args.ampm_clock:
-    	global is_ampm_clock
-    	is_ampm_clock = True
+        global is_ampm_clock
+        is_ampm_clock = True
 
-    while datetime.now() - start < timedelta(minutes=6):
-        scan(args, pokemonsJSON)
+    api_endpoint, access_token, profile_response = login(args)
+
+    while datetime.now() - start < timedelta(minutes=7):
+        scan(args, pokemonsJSON, pokemons, api_endpoint, access_token, profile_response)
+
+    save_all_pokemon(pokemons)
 
     print 'Program completed in {}'.format(str(datetime.now() - start))
 
 
 # run a scan of area
-def scan(args, pokemonsJSON):
-    api_endpoint, access_token, profile_response = login(args)
+def scan(args, pokemonsJSON, pokemons, api_endpoint, access_token, profile_response):
 
-    clear_stale_pokemons()
+    clear_stale_pokemons(pokemons)
 
     steplimit = int(args.step_limit)
 
@@ -600,7 +603,7 @@ def scan(args, pokemonsJSON):
         (x, y) = (x + dx, y + dy)
 
         process_step(args, api_endpoint, access_token, profile_response,
-                     pokemonsJSON, ignore, only)
+                     pokemonsJSON, ignore, only, pokemons)
 
         print('Completed: ' + str(
             ((step+1) + pos * .25 - .25) / (steplimit2) * 100) + '%')
@@ -617,7 +620,7 @@ def scan(args, pokemonsJSON):
 
 
 def process_step(args, api_endpoint, access_token, profile_response,
-                 pokemonsJSON, ignore, only):
+                 pokemonsJSON, ignore, only, pokemons):
     print('[+] Searching for Pokemon at location {} {}'.format(FLOAT_LAT, FLOAT_LONG))
     origin = LatLng.from_degrees(FLOAT_LAT, FLOAT_LONG)
     step_lat = FLOAT_LAT
@@ -684,7 +687,7 @@ def process_step(args, api_endpoint, access_token, profile_response,
 
         print "PokespawnpointId: {}".format(poke.SpawnPointId)
 
-def clear_stale_pokemons():
+def clear_stale_pokemons(pokemons):
     current_time = time.time()
 
     for pokemon_key in pokemons.keys():

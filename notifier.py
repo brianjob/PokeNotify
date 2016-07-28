@@ -1,8 +1,10 @@
 import json
 from pushbullet import Pushbullet
 from datetime import datetime
+from pytz import timezone
 import sys
-
+import groupme
+import os
 # Fixes the encoding of the male/female symbol
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -44,6 +46,11 @@ def still_running():
     print 'notifying app is still running'
     pushbullet_client.push_note('Pokemon finder is still running', 'just letting you know')
 
+def convert_timestamp(timestamp):
+    datetime_obj_naive = datetime.fromtimestamp(timestamp)
+    datetime_obj_est = timezone('US/Eastern').localize(datetime_obj_naive)
+    return datetime_obj_est.strftime("%-I:%M:%S %p")
+
 # Notify user for discovered Pokemon
 def pokemon_found(pokemon):
     # get name
@@ -63,11 +70,13 @@ def pokemon_found(pokemon):
     google_maps_link = 'http://maps.google.com/maps/place/{}/@{},{}z'.format(latLon, latLon, 20)
 
     notification_text = "THERE'S A FUCKING " + _str(pokemon["name"].upper()) + "!"
-    disappear_time = str(datetime.fromtimestamp(pokemon["disappear_time"]).strftime("%I:%M%p:%S").lstrip('0'))+")"
-    location_text = _str(pokemon["name"]) + " will be available until " + disappear_time + "."
+    disappear_time = convert_timestamp(pokemon['disappear_time'])
+    #disappear_time = str(datetime.fromtimestamp(pokemon["disappear_time"]).strftime("%I:%M%p:%S").lstrip('0'))+")"
+#    location_text = _str(pokemon["name"]) + " will be available until " + disappear_time + "."
 
-    push = pushbullet_client.push_link(notification_text, google_maps_link, body=location_text)
-
-
+    #push = pushbullet_client.push_link(notification_text, google_maps_link, body=location_text)
+    bot_id = os.environ['BOT_ID']
+    groupme_message = 'A wild {} appeared at {}, and will be available until {}.'.format(_str(pokemon['name']), google_maps_link, disappear_time)
+    groupme.send_message(groupme_message, bot_id)
 
 init()
