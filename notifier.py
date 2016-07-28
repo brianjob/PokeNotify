@@ -2,6 +2,7 @@ import json
 from pushbullet import Pushbullet
 from datetime import datetime
 from pytz import timezone
+from dateutil import tz
 import sys
 import groupme
 import os
@@ -47,9 +48,10 @@ def still_running():
     pushbullet_client.push_note('Pokemon finder is still running', 'just letting you know')
 
 def convert_timestamp(timestamp):
-    est = timezone('US/Eastern')
-    datetime_obj_est = est.localize(datetime.fromtimestamp(timestamp).replace(tzinfo=est))
-    return datetime_obj_est.strftime("%-I:%M:%S %p")
+    to_zone = tz.gettz('America/New_York')
+    dt = datetime.fromtimestamp(timestamp)
+    est = dt.astimezone(to_zone)
+    return est.strftime("%-I:%M:%S %p")
 
 # Notify user for discovered Pokemon
 def pokemon_found(pokemon):
