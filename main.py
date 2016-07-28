@@ -690,7 +690,7 @@ def process_step(args, api_endpoint, access_token, profile_response,
             print 'expires in {} seconds'.format(expires)
 
             if expires > 0:
-                pokemons.setex(poke.SpawnPointId, pokemon_obj, expires)
+                pokemons.setex(poke.SpawnPointId, json.dumps(pokemon_obj), expires)
 
         print "Pokemon :", pokemon_obj
         print "PokespawnpointId: {}".format(poke.SpawnPointId)
