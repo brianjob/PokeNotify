@@ -13,6 +13,7 @@ import pokemon_pb2
 import time
 import warnings
 import notifier
+import redis
 from google.protobuf.internal import encoder
 from google.protobuf.message import DecodeError
 from s2sphere import *
@@ -530,7 +531,7 @@ def login(args):
 
 def main():
     start = datetime.now()
-    pokemons = get_all_pokemon()
+    pokemons = redis.from_url(os.environ['REDISCLOUD_URL'])
 
     full_path = os.path.realpath(__file__)
     (path, filename) = os.path.split(full_path)
@@ -565,18 +566,14 @@ def main():
 
     api_endpoint, access_token, profile_response = login(args)
 
-    while datetime.now() - start < timedelta(minutes=7):
+    while datetime.now() - start < timedelta(minutes=9):
         scan(args, pokemonsJSON, pokemons, api_endpoint, access_token, profile_response)
-
-    save_all_pokemon(pokemons)
 
     print 'Program completed in {}'.format(str(datetime.now() - start))
 
 
 # run a scan of area
 def scan(args, pokemonsJSON, pokemons, api_endpoint, access_token, profile_response):
-
-    clear_stale_pokemons(pokemons)
 
     steplimit = int(args.step_limit)
 
@@ -678,24 +675,27 @@ def process_step(args, api_endpoint, access_token, profile_response,
             "name": pokename
         }
 
-        if poke.SpawnPointId not in pokemons:
+        if not pokemons.exists(poke.SpawnPointId):
             notifier.pokemon_found(pokemon_obj)
+            expires = (datetime.fromtimestamp(disappear_timestamp) - datetime.now()).seconds
 
-        pokemons[poke.SpawnPointId] = pokemon_obj
+            print 'expires in {} seconds'.format(expires)
+
+            if expires > 0:
+                pokemons.setex(poke.SpawnPointId, pokemon_obj, expires)
 
         print "Pokemon :", pokemon_obj
-
         print "PokespawnpointId: {}".format(poke.SpawnPointId)
 
-def clear_stale_pokemons(pokemons):
-    current_time = time.time()
-
-    for pokemon_key in pokemons.keys():
-        pokemon = pokemons[pokemon_key]
-        if current_time > pokemon['disappear_time']:
-            print "[+] removing stale pokemon %s at %f, %f from list" % (
-                pokemon['name'].encode('utf-8'), pokemon['lat'], pokemon['lng'])
-            del pokemons[pokemon_key]
+#def clear_stale_pokemons(pokemons):
+#    current_time = time.time()
+#
+#   for pokemon_key in pokemons.keys():
+#        pokemon = pokemons[pokemon_key]
+#        if current_time > pokemon['disappear_time']:
+#            print "[+] removing stale pokemon %s at %f, %f from list" % (
+#                pokemon['name'].encode('utf-8'), pokemon['lat'], pokemon['lng'])
+#            del pokemons[pokemon_key]
 
 if __name__ == '__main__':
     main()
