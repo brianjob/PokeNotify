@@ -47,9 +47,20 @@ def still_running():
     pushbullet_client.push_note('Pokemon finder is still running', 'just letting you know')
 
 def convert_timestamp(timestamp):
+    # METHOD 1: Hardcode zones:
+    from_zone = tz.gettz('UTC')
     to_zone = tz.gettz('America/New_York')
-    dt = datetime.fromtimestamp(timestamp)
-    est = dt.astimezone(to_zone)
+
+    # utc = datetime.utcnow()
+    utc = datetime.fromtimestamp(timestamp)
+
+    # Tell the datetime object that it's in UTC time zone since 
+    # datetime objects are 'naive' by default
+    utc = utc.replace(tzinfo=from_zone)
+
+    # Convert time zone
+    est = utc.astimezone(to_zone)
+
     return est.strftime("%-I:%M:%S %p")
 
 # Notify user for discovered Pokemon
