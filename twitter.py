@@ -10,4 +10,4 @@ def tweet(message):
   try:
     api.update_status(message)
   except tweepy.error.TweepError as e:
-    print e[0]['message']
+    print e
