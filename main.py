@@ -26,7 +26,6 @@ from requests.adapters import ConnectionError
 from requests.models import InvalidURL
 from requests.exceptions import ReadTimeout
 from transform import *
-from persist import get_all_pokemon, save_all_pokemon
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
