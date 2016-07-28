@@ -1,7 +1,6 @@
 import json
 from pushbullet import Pushbullet
 from datetime import datetime
-from pytz import timezone
 from dateutil import tz
 import sys
 import groupme
