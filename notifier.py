@@ -5,6 +5,7 @@ from dateutil import tz
 import sys
 import groupme
 import os
+
 # Fixes the encoding of the male/female symbol
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -86,6 +87,6 @@ def pokemon_found(pokemon):
     bot_id = os.environ['BOT_ID']
     groupme_message = 'A wild {} appeared at {}, and will be available until {}.'.format(_str(pokemon['name']), google_maps_link, disappear_time)
     groupme.send_message(groupme_message, bot_id)
-    twitter.tweet(groupme_message)
+#    twitter.tweet(groupme_message)
 
 init()
