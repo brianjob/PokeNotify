@@ -5,6 +5,7 @@ from dateutil import tz
 import sys
 import groupme
 import os
+import twitter
 
 # Fixes the encoding of the male/female symbol
 reload(sys)
@@ -45,7 +46,7 @@ def _str(s):
 
 def convert_timestamp(timestamp):
     # METHOD 1: Hardcode zones:
-    from_zone = tz.gettz('UTC')
+    from_zone = tz.tzlocal()
     to_zone = tz.gettz('America/New_York')
 
     # utc = datetime.utcnow()
@@ -85,8 +86,8 @@ def pokemon_found(pokemon):
 
     #push = pushbullet_client.push_link(notification_text, google_maps_link, body=location_text)
     bot_id = os.environ['BOT_ID']
-    groupme_message = 'A wild {} appeared at {}, and will be available until {}.'.format(_str(pokemon['name']), google_maps_link, disappear_time)
+    groupme_message = 'A wild {} appeared at {} and will be available until {}.'.format(_str(pokemon['name']), google_maps_link, disappear_time)
     groupme.send_message(groupme_message, bot_id)
-#    twitter.tweet(groupme_message)
+    twitter.tweet(groupme_message)
 
 init()
